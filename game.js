@@ -55,10 +55,12 @@ window.onload = function() {
             }
             if(game.input.right) {
                 dragon.x += 10;
+                dragon.x = Math.min(game.rootScene.width - dragon.width, dragon.x);
                 dragon.scaleX = -1;
             }
             if(game.input.left) {
                 dragon.x -= 10;
+                dragon.x = Math.max(0, dragon.x);
                 dragon.scaleX = 1;
             }
         }
@@ -100,12 +102,58 @@ window.onload = function() {
                         this.remove();
 
                         if(this.frame != 0) {
+                            // 1以外をとった時
                             dragon.frame = 0;
                             gameFreezeTime = 30;
+                            // ミサイルがぶつかった時
+                             if(this.isMissile) {
+                                game.score = 0;
+                                scoreLabel.text = "SCORE : "+game.score;
 
-                            game.score -= 1;
-                            game.score = Math.max(0, game.score);
-                            scoreLabel.text = "SCORE : "+game.score;
+                                var effect = new Sprite(16, 16);
+                                effect.image = game.assets['./enchant.js-builds-0.8.0/images/effect0.png'];
+                                effect.x = this.x;
+                                effect.y = this.y;
+                                effect.scaleX = 3;
+                                effect.scaleY = 3;
+                                effect.frameIndex = 0;
+                                var frameList = [0, 1, 2, 3, 4];
+                                game.rootScene.addChild(effect);
+
+                                effect.onenterframe = function() {
+                                    if(game.frame %3 == 0){
+                                        this.frameIndex ++;
+                                        if(this.frameIndex == 5) {
+                                            this.remove();
+                                            return;
+                                        }
+                                        this.frame = frameList[this.frameIndex];
+                                    }
+                                }
+                            } else {
+                               game.score -= 1;
+                                game.score = Math.max(0, game.score);
+                                scoreLabel.text = "SCORE : "+game.score;
+
+                                var effect = new Sprite(16, 16);
+                                effect.image = game.assets['./enchant.js-builds-0.8.0/images/icon0.png']
+                                effect.x = this.x;
+                                effect.y = this.y;
+                                effect.scaleX = 3;
+                                effect.scaleY = 3;
+                                effect.frame = 11;
+                                effect.lifeTime = 0;
+                                game.rootScene.addChild(effect);
+                                effect.onenterframe = function() {
+                                    if (this.lifeTime % 3) {
+                                        this.y -= 3;
+                                    }
+                                    if (this.lifeTime == 18) {
+                                        this.remove();
+                                    }
+                                    this.lifeTime++;
+                                }
+                            }
                         } else {
                             // 1をとった時
                             game.score += 1;
@@ -121,41 +169,13 @@ window.onload = function() {
                             effect.lifeTime = 0;
                             game.rootScene.addChild(effect);
                             effect.onenterframe = function() {
-                                if (effect.lifeTime % 3) {
-                                    effect.y -= 3;
+                                if (this.lifeTime % 3) {
+                                    this.y -= 3;
                                 }
-                                if (effect.lifeTime == 18) {
-                                    effect.remove();
+                                if (this.lifeTime == 18) {
+                                    this.remove();
                                 }
-                                effect.lifeTime++;
-                            }
-                        }
-                        // ミサイルがぶつかった時
-                        if(this.isMissile) {
-                            game.score = 0;
-                            scoreLabel.text = "SCORE : "+game.score;
-
-                            var effect = new Sprite(16, 16);
-                            effect.image = game.assets['./enchant.js-builds-0.8.0/images/effect0.png'];
-                            effect.x = this.x;
-                            effect.y = this.y;
-                            effect.scaleX = 3;
-                            effect.scaleY = 3;
-
-                            effect.frameIndex = 0;
-                            var frameList = [0, 1, 2, 3, 4];
-
-                            game.rootScene.addChild(effect);
-
-                            effect.onenterframe = function() {
-                                if(game.frame %3 == 0){
-                                    this.frameIndex ++;
-                                    if(this.frameIndex == 5) {
-                                        this.remove();
-                                        return;
-                                    }
-                                    this.frame = frameList[this.frameIndex];
-                                }
+                                this.lifeTime++;
                             }
                         }
                     }
