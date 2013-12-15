@@ -11,9 +11,10 @@ window.onload = function() {
     var DropVelosity = 8;
 
     game.onload = function() {
-        var background = new Sprite(game.rootScene.width, game.rootScene.height);
+        var mainScene = new Scene();
+        var background = new Sprite(mainScene.width, mainScene.height);
         background.image = game.assets['./background.jpg'];
-        game.rootScene.addChild(background);
+        mainScene.addChild(background);
 
         // スコアを入れる変数を用意する
         game.score = 0;
@@ -23,16 +24,16 @@ window.onload = function() {
         scoreLabel.color = "white";
         scoreLabel.x = 10;  // X座標
         scoreLabel.y = 5;   // Y座標
-        game.rootScene.addChild(scoreLabel);
+        mainScene.addChild(scoreLabel);
 
         var dragon = new Sprite(80, 80);
         dragon.image = game.assets['./enchant.js-builds-0.8.0/images/monster/bigmonster1.gif'];
-        dragon.x = game.rootScene.width/2;
-        dragon.y = game.rootScene.height - dragon.height - 10;
+        dragon.x = mainScene.width/2;
+        dragon.y = mainScene.height - dragon.height - 10;
 
         console.log("" + dragon.x + dragon.y);
         dragon.frame = 3;
-        game.rootScene.addChild(dragon);
+        mainScene.addChild(dragon);
 
         dragon.frameIndex = 0;
         var frameList = [2, 3, 4, 3];
@@ -55,7 +56,7 @@ window.onload = function() {
             }
             if(game.input.right) {
                 dragon.x += 10;
-                dragon.x = Math.min(game.rootScene.width - dragon.width, dragon.x);
+                dragon.x = Math.min(mainScene.width - dragon.width, dragon.x);
                 dragon.scaleX = -1;
             }
             if(game.input.left) {
@@ -118,7 +119,7 @@ window.onload = function() {
                                 effect.scaleY = 3;
                                 effect.frameIndex = 0;
                                 var frameList = [0, 1, 2, 3, 4];
-                                game.rootScene.addChild(effect);
+                                mainScene.addChild(effect);
 
                                 effect.onenterframe = function() {
                                     if(game.frame %3 == 0){
@@ -143,7 +144,7 @@ window.onload = function() {
                                 effect.scaleY = 3;
                                 effect.frame = 11;
                                 effect.lifeTime = 0;
-                                game.rootScene.addChild(effect);
+                                mainScene.addChild(effect);
                                 effect.onenterframe = function() {
                                     if (this.lifeTime % 3) {
                                         this.y -= 3;
@@ -167,7 +168,7 @@ window.onload = function() {
                             effect.scaleY = 3;
                             effect.frame = 10;
                             effect.lifeTime = 0;
-                            game.rootScene.addChild(effect);
+                            mainScene.addChild(effect);
                             effect.onenterframe = function() {
                                 if (this.lifeTime % 3) {
                                     this.y -= 3;
@@ -180,15 +181,16 @@ window.onload = function() {
                         }
                     }
 
-                    if(this.y > game.rootScene.height) {
+                    if(this.y > mainScene.height) {
                         this.remove();
                     }
                 }
-                game.rootScene.insertBefore(dropItem, dragon);
+                mainScene.insertBefore(dropItem, dragon);
 
 
             }
         }
+        game.pushScene(mainScene);
     }
     game.start();
 }
