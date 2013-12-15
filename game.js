@@ -1,17 +1,12 @@
 enchant();
-
-function setupEndingScene() {
-    var endingScene = new Scene();
-    background.image = game.assets['./background.jpg'];
-    mainScene.addChild(background);
-    endingScene.addChild(background);
-
-}
+var game;
 
 window.onload = function() {
-    var game = new Game(640, 640);
+    game = new Game(640, 640);
+    game.preload('./background.jpg');
     game.preload('./background.jpg');
     game.preload('./enchant.js-builds-0.8.0/images/monster/bigmonster1.gif');
+    game.preload('./enchant.js-builds-0.8.0/images/end.png');
     game.preload('./enchant.js-builds-0.8.0/images/icon0.png');
     game.preload('./enchant.js-builds-0.8.0/images/space0.png');
     game.preload('./enchant.js-builds-0.8.0/images/effect0.png');
@@ -156,6 +151,9 @@ window.onload = function() {
                                         this.y -= 3;
                                     }
                                     if (this.lifeTime == 18) {
+                                        if(game.score <= 0) {
+                                            game.pushScene(setupEndingScene());
+                                        }
                                         this.remove();
                                     }
                                     this.lifeTime++;
