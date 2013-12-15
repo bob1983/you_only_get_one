@@ -1,5 +1,13 @@
 enchant();
 
+function setupEndingScene() {
+    var endingScene = new Scene();
+    background.image = game.assets['./background.jpg'];
+    mainScene.addChild(background);
+    endingScene.addChild(background);
+
+}
+
 window.onload = function() {
     var game = new Game(640, 640);
     game.preload('./background.jpg');
@@ -17,21 +25,20 @@ window.onload = function() {
         mainScene.addChild(background);
 
         // スコアを入れる変数を用意する
-        game.score = 0;
+        game.score = 1;
         // スコアを表示するラベルを作成
         var scoreLabel = new Label("SCORE : 0");
         scoreLabel.font = "16px Tahoma";
         scoreLabel.color = "white";
-        scoreLabel.x = 10;  // X座標
-        scoreLabel.y = 5;   // Y座標
+        scoreLabel.x = 10; // X座標
+        scoreLabel.y = 5; // Y座標
         mainScene.addChild(scoreLabel);
 
         var dragon = new Sprite(80, 80);
         dragon.image = game.assets['./enchant.js-builds-0.8.0/images/monster/bigmonster1.gif'];
-        dragon.x = mainScene.width/2;
+        dragon.x = mainScene.width / 2;
         dragon.y = mainScene.height - dragon.height - 10;
 
-        console.log("" + dragon.x + dragon.y);
         dragon.frame = 3;
         mainScene.addChild(dragon);
 
@@ -40,46 +47,46 @@ window.onload = function() {
 
         var gameFreezeTime = 0;
 
-        dragon.onenterframe = function () {
-            gameFreezeTime = Math.max(gameFreezeTime-1,0);
-            if(gameFreezeTime > 0) {
+        dragon.onenterframe = function() {
+            gameFreezeTime = Math.max(gameFreezeTime - 1, 0);
+            if (gameFreezeTime > 0) {
                 if (gameFreezeTime == 1) {
                     this.frame = frameList[this.frameIndex];
                 }
                 return;
             }
             //ドラゴンをアニメーションさせる
-            if(game.frame %10 == 0){
-                this.frameIndex ++;
+            if (game.frame % 10 === 0) {
+                this.frameIndex++;
                 this.frameIndex %= frameList.length;
                 this.frame = frameList[this.frameIndex];
             }
-            if(game.input.right) {
+            if (game.input.right) {
                 dragon.x += 10;
                 dragon.x = Math.min(mainScene.width - dragon.width, dragon.x);
                 dragon.scaleX = -1;
             }
-            if(game.input.left) {
+            if (game.input.left) {
                 dragon.x -= 10;
                 dragon.x = Math.max(0, dragon.x);
                 dragon.scaleX = 1;
             }
-        }
+        };
 
-        game.onenterframe = function () {
+        game.onenterframe = function() {
             if (gameFreezeTime > 0) {
                 return;
             }
-            if (game.frame % DropFrequency == 0) {
+            if (game.frame % DropFrequency === 0) {
                 var dropItem;
-                if (game.frame % (DropFrequency * 10) == 0) {
-                    dropItem = new Sprite(32,64);
+                if (game.frame % (DropFrequency * 10) === 0) {
+                    dropItem = new Sprite(32, 64);
                     dropItem.image = game.assets['./enchant.js-builds-0.8.0/images/space0.png'];
                     dropItem.scaleX = 1;
                     dropItem.scaleY = -1;
                     dropItem.isMissile = true;
                 } else {
-                    dropItem = new Sprite(16,16);
+                    dropItem = new Sprite(16, 16);
                     dropItem.image = game.assets['./enchant.js-builds-0.8.0/images/icon0.png'];
                     dropItem.scaleX = 2;
                     dropItem.scaleY = 2;
@@ -90,26 +97,25 @@ window.onload = function() {
                 dropItem.y = 0;
 
                 var rand = Math.floor(Math.random() * 10);
-                console.log("rand: " + rand);
                 dropItem.frame = rand;
 
-                dropItem.onenterframe = function () {
+                dropItem.onenterframe = function() {
                     if (gameFreezeTime > 0) {
                         return;
                     }
                     this.y += DropVelosity;
 
-                    if(this.within(dragon, 40)) {
+                    if (this.within(dragon, 40)) {
                         this.remove();
 
-                        if(this.frame != 0) {
+                        if (this.frame !== 0) {
                             // 1以外をとった時
                             dragon.frame = 0;
                             gameFreezeTime = 30;
                             // ミサイルがぶつかった時
-                             if(this.isMissile) {
+                            if (this.isMissile) {
                                 game.score = 0;
-                                scoreLabel.text = "SCORE : "+game.score;
+                                scoreLabel.text = "SCORE : " + game.score;
 
                                 var effect = new Sprite(16, 16);
                                 effect.image = game.assets['./enchant.js-builds-0.8.0/images/effect0.png'];
@@ -122,19 +128,21 @@ window.onload = function() {
                                 mainScene.addChild(effect);
 
                                 effect.onenterframe = function() {
-                                    if(game.frame %3 == 0){
-                                        this.frameIndex ++;
-                                        if(this.frameIndex == 5) {
+                                    if (game.frame % 3 === 0) {
+                                        this.frameIndex++;
+                                        if (this.frameIndex == 5) {
                                             this.remove();
                                             return;
                                         }
                                         this.frame = frameList[this.frameIndex];
                                     }
-                                }
+                                };
+
                             } else {
-                               game.score -= 1;
-                                game.score = Math.max(0, game.score);
-                                scoreLabel.text = "SCORE : "+game.score;
+                                game.score -= 1;
+                                //game.score = Math.max(0, game.score);
+                                if (Game.score < 0) {}
+                                scoreLabel.text = "SCORE : " + game.score;
 
                                 var effect = new Sprite(16, 16);
                                 effect.image = game.assets['./enchant.js-builds-0.8.0/images/icon0.png']
@@ -157,9 +165,8 @@ window.onload = function() {
                             }
                         } else {
                             // 1をとった時
-                            game.score += 1;
-                            scoreLabel.text = "SCORE : "+game.score;
-
+                            game.score = Math.max(0, ++game.score);
+                            scoreLabel.text = "SCORE : " + game.score;
                             var effect = new Sprite(16, 16);
                             effect.image = game.assets['./enchant.js-builds-0.8.0/images/icon0.png']
                             effect.x = this.x;
@@ -175,19 +182,20 @@ window.onload = function() {
                                 }
                                 if (this.lifeTime == 18) {
                                     this.remove();
+                                    if( game.score === 0) {
+                                        game.Scene.pushScene(endingScene);
+                                    }
                                 }
                                 this.lifeTime++;
-                            }
+                            };
                         }
                     }
 
-                    if(this.y > mainScene.height) {
+                    if (this.y > mainScene.height) {
                         this.remove();
                     }
                 }
                 mainScene.insertBefore(dropItem, dragon);
-
-
             }
         }
         game.pushScene(mainScene);
