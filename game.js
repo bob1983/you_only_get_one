@@ -139,9 +139,7 @@ window.onload = function() {
                                 };
 
                             } else {
-                                game.score -= 1;
-                                //game.score = Math.max(0, game.score);
-                                if (Game.score < 0) {}
+                                game.score = Math.max(0, --game.score);
                                 scoreLabel.text = "SCORE : " + game.score;
 
                                 var effect = new Sprite(16, 16);
